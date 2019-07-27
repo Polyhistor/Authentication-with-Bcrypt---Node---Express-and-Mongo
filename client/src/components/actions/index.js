@@ -1,0 +1,46 @@
+import axios from "axios";
+import { AUTH_USER, AUTH_ERROR } from "./types";
+
+export const signup = (formProps, callback) => async dispatch => {
+  try {
+    const response = await axios.post(
+      "http://localhost:3090/signup",
+      formProps
+    );
+
+    dispatch({ type: AUTH_USER, payload: response.data.token });
+    // also storing in our local storage for page refresh
+    localStorage.setItem("token", response.data.token);
+    // our initially set callback on the function
+    callback();
+  } catch (e) {
+    dispatch({ type: AUTH_ERROR, payload: "email in use" });
+  }
+};
+
+export const signout = () => {
+  // cleaning up the local storage
+  localStorage.removeItem("token");
+
+  return {
+    type: AUTH_USER,
+    payload: ""
+  };
+};
+
+export const signin = (formProps, callback) => async dispatch => {
+  try {
+    const response = await axios.post(
+      "http://localhost:3090/signin",
+      formProps
+    );
+
+    dispatch({ type: AUTH_USER, payload: response.data.token });
+    // also storing in our local storage for page refresh
+    localStorage.setItem("token", response.data.token);
+    // our initially set callback on the function
+    callback();
+  } catch (e) {
+    dispatch({ type: AUTH_ERROR, payload: "invalid login credentials" });
+  }
+};
